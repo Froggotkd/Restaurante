@@ -3,13 +3,14 @@ const morgan = require('morgan')
 const cors = require('cors')
 const app = express()
 const platosRoutes = require('./routes/platoRoutes')
-
+const compraRoutes = require('./routes/compraRoutes')
 
 
 app.use(cors()); //conecta los dos servidores
 app.use(morgan('dev'))
 app.use(express.json());
 app.use(platosRoutes)
+app.use(compraRoutes)
 
 app.use((err, req, res, next)=>{
     return res.json({

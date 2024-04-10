@@ -1,27 +1,29 @@
 import React, { useState } from 'react';
-import { Grid, Typography, Card, TextField, Button, CircularProgress, Checkbox } from '@mui/material';
+import {  Box, AppBar, Grid, Typography, Card, TextField, Button, CircularProgress, Checkbox, List, ListItemText, ListItem, Collapse, ListItemIcon, ListItemButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import bg from '../img/bg_platoForms.png';
 
 const buttonStyles = {
-  borderRadius: '0px', 
-  padding: '5px 12px', 
-  backgroundColor: '#cccccc', 
-  color: '#2d2d2d', 
-  transition: 'background-color 0.3s', 
+  fontFamily: 'Times New Roman, sans serif',
+  borderRadius: '0px',
+  padding: '5px 10px',
+  backgroundColor: '#cccccc',
+  color: '#2d2d2d',
+  transition: 'background-color 0.3s',
   '&:hover': {
-    backgroundColor: '#b2b2b2', 
+    backgroundColor: '#b2b2b2',
   },
 };
 
 const buttonStylesNow = {
-  borderRadius: '0px', 
-  padding: '5px 12px', 
-  backgroundColor: '#b2b2b2', 
-  color: '#000000', 
-  transition: 'background-color 0.3s', 
+  fontFamily: 'Times New Roman, sans serif',
+  borderRadius: '0px',
+  padding: '5px 10px',
+  backgroundColor: '#b2b2b2',
+  color: '#000000',
+  transition: 'background-color 0.3s',
   '&:hover': {
-    backgroundColor: '#999999', 
+    backgroundColor: '#999999',
   },
 };
 
@@ -31,21 +33,24 @@ export default function PlatoForms() {
     plato_precio: '',
     plato_descripcion: '',
     plato_disponibilidad: false,
-    plato_imagen: ''
+    plato_imagen: '',
+    plato_categoria: ''
   });
-
-  
 
   const [loading, setLoading] = useState(false);
   const [precioError, setPrecioError] = useState('');
   const [nombreError, setNombreError] = useState('');
   const [descError, setDescError] = useState('');
+  const [open, setOpen] = useState(false);
+  const [selectedCategoria, setSelectedCategoria] = useState('');
+  const categorias = ['Bebidas', 'Cafetería', 'Platos', 'Postres'];
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     setLoading(true);
     e.preventDefault();
+    console.log('2' + plato.plato_categoria)
 
     try {
       const res = await fetch("http://localhost:4000/platos", {
@@ -106,6 +111,19 @@ export default function PlatoForms() {
     setPlato({ ...plato, plato_imagen: value });
   }
 
+  const handleClick = () => {
+    setOpen(!open);
+  }
+
+  const handleCategoriaLista = (categoria) => {
+    setSelectedCategoria(categoria);
+    setPlato({ ...plato, plato_categoria: categoria });
+    console.log(categoria)
+    console.log(typeof (categoria))
+    setOpen(true);
+  }
+
+
   return (
     <Grid
       container
@@ -119,10 +137,23 @@ export default function PlatoForms() {
         borderTop: '10px'
       }}
     >
-      <Grid item xs={20} md={10} lg={4}>
-      <Button disableRipple sx={buttonStylesNow}>Crear Plato </Button>
-      <Button disableRipple sx={buttonStyles} onClick={() => navigate('/edit')} >Editar Plato</Button>
-      <Button disableRipple sx={buttonStyles} onClick={() => navigate('/delete')} >Eliminar Plato</Button>
+      <Grid item xs={20} md={10} lg={4} sx={{ marginTop: 10 }}>
+        <AppBar sx={{ bgcolor: 'white', p: 0.8 }}>
+          <Box>
+            <Button disableRipple onClick={() => navigate('/')}
+            sx={{
+              marginLeft: 120, bgcolor: 'white', fontFamily: 'Times New Roman, sans serif', color: '#2d2d2d',
+              transition: 'background-color 0.3s',
+              '&:hover': {
+                backgroundColor: '#cccccc',
+              },
+            }}>Menú Principal</Button>
+          </Box>
+        </AppBar>
+
+        <Button disableRipple sx={buttonStylesNow}>Crear Plato </Button>
+        <Button disableRipple sx={buttonStyles} onClick={() => navigate('/edit')} >Editar Plato</Button>
+        <Button disableRipple sx={buttonStyles} onClick={() => navigate('/delete')} >Eliminar Plato</Button>
         <Card variant='outlined' sx={{
           p: 4,
           backgroundColor: '#ffffff',
@@ -130,12 +161,14 @@ export default function PlatoForms() {
           borderColor: '#cccccc'
         }}>
           <Typography variant='h5' gutterBottom align='center' sx={{
-            color: '#232520',
+            color: '#232520', fontWeight: 450, fontFamily: 'Times New Roman, sans serif'
           }}>
             Crear Plato
           </Typography>
           <form onSubmit={handleSubmit}>
             <TextField
+              inputProps={{ style: { fontFamily: 'Times New Roman, sans serif' } }}
+              InputLabelProps={{ style: { fontFamily: 'Times New Roman, sans serif' } }}
               fullWidth
               variant='outlined'
               label='Nombre'
@@ -147,6 +180,8 @@ export default function PlatoForms() {
               helperText={nombreError}
             />
             <TextField
+              inputProps={{ style: { fontFamily: 'Times New Roman, sans serif' } }}
+              InputLabelProps={{ style: { fontFamily: 'Times New Roman, sans serif' } }}
               fullWidth
               variant='outlined'
               label='Precio'
@@ -158,6 +193,8 @@ export default function PlatoForms() {
               helperText={precioError}
             />
             <TextField
+              inputProps={{ style: { fontFamily: 'Times New Roman, sans serif' } }}
+              InputLabelProps={{ style: { fontFamily: 'Times New Roman, sans serif' } }}
               fullWidth
               multiline
               variant='outlined'
@@ -170,6 +207,8 @@ export default function PlatoForms() {
               helperText={descError}
             />
             <TextField
+              inputProps={{ style: { fontFamily: 'Times New Roman, sans serif' } }}
+              InputLabelProps={{ style: { fontFamily: 'Times New Roman, sans serif' } }}
               fullWidth
               multiline
               variant='outlined'
@@ -179,15 +218,39 @@ export default function PlatoForms() {
               onChange={handleChangeImagen}
               margin='normal'
             />
+
+            <List
+              component="nav"
+              aria-labelledby="nested-list-subheader"
+              sx={{ width: '100%', maxWidth: 320, bgcolor: '#f3f3f3', borderRadius: 3, marginBottom: 1, marginTop: 1 }}
+            >
+              <ListItem onClick={handleClick}>
+                <ListItemText disableTypography primary={<Typography sx={{
+                  fontSize: 17, color: '#808080', fontFamily: 'Times New Roman, sans serif'
+                }} >Categoría</Typography>} />
+                {open ? <ListItemIcon> &#9654; </ListItemIcon> : <ListItemIcon> &#9660; </ListItemIcon>}
+              </ListItem>
+              <Collapse in={open} timeout="auto" unmountOnExit>
+                {categorias.map((categoria) => (
+                  <ListItem onClick={() => handleCategoriaLista(categoria)} key={categoria}>
+                    <ListItemButton>
+                      <ListItemText secondary={<Typography sx={{ fontFamily: 'Times New Roman, sans serif', fontSize: 15 }}>{categoria}</Typography>} />
+                      {selectedCategoria === categoria && <ListItemIcon>✔</ListItemIcon>}
+                    </ListItemButton>
+                  </ListItem>
+                ))}
+              </Collapse>
+            </List>
+
             <Typography variant='body1' gutterBottom align='left' sx={{
               color: '#68706a',
-              fontFamily: 'Arial'
+              fontFamily: 'Times New Roman, sans serif'
             }}>
               ¿Está disponible?
 
               <Typography variant='body1' gutterBottom align='right' sx={{
                 color: '#68706a',
-                fontFamily: 'Arial'
+                fontFamily: 'Times New Roman, sans serif'
               }}>
                 <Checkbox
                   checked={plato.plato_disponibilidad}
@@ -207,7 +270,7 @@ export default function PlatoForms() {
               variant='contained'
               color='primary'
               type='submit'
-              disabled={!plato.plato_nombre || !plato.plato_descripcion || !plato.plato_precio || loading || !!precioError ||!plato.plato_imagen}
+              disabled={!plato.plato_nombre || !plato.plato_descripcion || !plato.plato_precio || loading || !!precioError || !plato.plato_imagen}
               sx={buttonStylesNow}
             >
               {loading ? <CircularProgress size={24} color='inherit' /> : 'Guardar'}
