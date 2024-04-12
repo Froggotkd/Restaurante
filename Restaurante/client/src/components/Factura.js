@@ -27,6 +27,7 @@ export default function Factura() {
       if (ultimoCliente.cliente_nombre === 'invalid') {
         ultimoCliente.cliente_nombre = ' ';
       }
+      orden.orden_cliente = ultimoCliente.cliente_id
     }
   };
 
@@ -39,7 +40,7 @@ export default function Factura() {
       const ultOrden = data[data.length - 1];
       console.log(ultOrden.orden_id)
       loadDetalles(ultOrden.orden_id);
-     // updOrden(ultOrden.orden_id);
+     updOrden(ultOrden.orden_id);
     }
   };
 
@@ -58,14 +59,7 @@ export default function Factura() {
   const date = new Date();
   const fechaString = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
 
-  const [orden, setOrden] = useState({
-    orden_precio: 0,
-    orden_reciofinal :0,
-    orden_iva: 0,
-    orden_fecha: fechaString,
-    orden_cliente: 3
-  })
-
+  
   const getPlatoName = (platoId) => {
     const plato = platos.find((plato) => plato.plato_id === platoId);
     return plato ? plato.plato_nombre : 'Plato no encontrado';
@@ -80,31 +74,42 @@ export default function Factura() {
     let totalPrecio = 0;
     detalles.forEach((detalle) => {
       totalPrecio += detalle.detalle_cantidad * getPlatoPrecio(detalle.detalle_platos);
+      orden.orden_precio = totalPrecio;
     });
-
-    //setOrden({...orden, orden_precio: totalPrecio})
     return totalPrecio;
 
   };
 
   const getIVA = (totalPrecio) => {
     let iva = totalPrecio * 0.15;
+    orden.orden_iva = iva;
     return iva
   }
 
   const getPrecioFinal = (iva, subtotal) => {
     let precioFinal = iva + subtotal;
+    orden.orden_preciofinal = precioFinal;
     return precioFinal;
-  }
+  };
+  
 
   const handleObtTicket = () => {
     loadCliente();
     loadOrdenes();
   }
 
+  const [orden, setOrden] = useState({
+    orden_precio: 0,
+    orden_preciofinal :0,
+    orden_iva: 0,
+    orden_fecha: fechaString,
+    orden_cliente: 3
+  })
 
 
-  /*const updOrden = async (value) => {
+
+
+  const updOrden = async (value) => {
     try {
       const res = await fetch('http://localhost:4000/orden/' + value, {
         method: 'PUT',
@@ -119,7 +124,7 @@ export default function Factura() {
     } catch (error) {
       console.error(error);
     }
-  }*/
+  }
 
   return (
     <Grid container style={{
