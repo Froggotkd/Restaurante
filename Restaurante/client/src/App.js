@@ -4,6 +4,8 @@ import PlatoForms from './components/PlatoForms'
 import {Container} from '@mui/material'
 import PlatoUpdate from './components/PlatoUpdate.js'
 import PlatosDelete from './components/PlatoDelete.js'
+import Cliente from './components/Cliente.js'
+import Factura from './components/Factura.js'
 
 export default function App() {
   return (
@@ -15,6 +17,8 @@ export default function App() {
       <Route path ='/create' element={<PlatoForms/>} />
       <Route path ='/edit' element={<PlatoUpdate/>} />
       <Route path ='/delete' element={<PlatosDelete/>} />
+      <Route path ='/ticket' element={<Factura/>} />
+      <Route path ='/client' element={<Cliente/>} />
     </Routes>
       </Container>
     </BrowserRouter>
