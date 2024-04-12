@@ -8,8 +8,8 @@ const getAllPlatos = async (req, res, next) => {
 
 const getPlato = async (req, res, next) => {
     try {
-        const { plato_nombre } = req.params
-        const result = await pool.query('SELECT * FROM menu WHERE plato_nombre= $1', [plato_nombre])
+        const { plato_id } = req.params
+        const result = await pool.query('SELECT * FROM menu WHERE plato_id= $1', [plato_id])
 
         if (result.rows.length === 0) {
             return res.status(404).json({

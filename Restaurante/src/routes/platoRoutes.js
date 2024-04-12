@@ -6,7 +6,7 @@ const router = Router()
 
 router.get('/platos', getAllPlatos)
 
-router.get('/platos/:plato_nombre', getPlato)
+router.get('/platos/:plato_id', getPlato)
 
 router.post('/platos', createPlato)
 

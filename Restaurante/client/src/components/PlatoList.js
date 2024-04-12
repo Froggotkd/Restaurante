@@ -57,6 +57,7 @@ export default function PlatoList() {
   };
 
   const handleCompra = (plato) => {
+    handleIncrement(plato.plato_id)
     if(carrito.includes(plato)){ //Ejecutada cuando el user aplasta el botón de comprar, veifica que no esté ya en el carrito, si sí aumenta la cantidad por 1
       handleIncrement(plato.plato_id)
     }else{
@@ -144,30 +145,61 @@ export default function PlatoList() {
   );
 
   const[orden, setOrden] = useState({ //Obj en donde comienza la orden
-    orden_precio:'', 
-    orden_preciofinal: '',
+    orden_precio:0, 
+    orden_preciofinal: 0,
     orden_cliente: 1,
-    orden_fecha:'',
-    orden_iva:''
+    orden_fecha:'6/6/2',
+    orden_iva:0
   })
 
 const handleFinalizarCompra = async () => {
-
     try {
-      const res = await fetch("http://192.168.100.24:4000/platos/orden", {
+      // Crear la orden primero
+      const resOrden = await fetch("http://192.168.100.24:4000/platos/orden", {
         method: 'POST',
         body: JSON.stringify(orden),
         headers: { "Content-Type": "application/json" }
       });
   
-      if (!res.ok) {
+      if (!resOrden.ok) {
         throw new Error('Error al iniciar la orden');
       }
-      navigate('/create')
+  
+      // Obtener el ID de la orden creada
+      const ordenCreada = await resOrden.json();
+      const ordenID = ordenCreada.orden_id;
+  
+      // Crear detalles para cada plato en el carrito
+      const detalles = carrito.map(plato => ({
+        detalle_ordenID: ordenID,
+        detalle_platos: plato.plato_id,
+        detalle_cantidad: cantidades[plato.plato_id]
+      }));
+      
+      // Envía los detalles al backend
+      for(var i = 0; i < detalles.length; i++){
+        const resDetalles = await fetch("http://192.168.100.24:4000/detalle", {
+          method: 'POST',
+          body: JSON.stringify(detalles[i]),
+          headers: { "Content-Type": "application/json" }
+        });
+    
+        if (!resDetalles.ok) {
+          throw new Error('Error al guardar los detalles de la orden');
+        }
+      }
+      
+  
+      // Reiniciar el carrito y las cantidades
+      setCarrito([]);
+      setCantidades({});
+  
+      navigate('/client');
     } catch (error) {
       console.error(error);
     }
   };
+  
 
   const [cantidades, setCantidades] = useState({}); //Para ver la cantidad de cada plato en el array del drawer
   const handleIncrement = (platoId) => { //Aumenta la cantidad del plato
@@ -193,6 +225,27 @@ const handleFinalizarCompra = async () => {
     });
     return total;
   };
+
+  const[detalle, setDetalle] = useState ({
+    detalle_ordenID:1 ,
+    detalle_platos:1 ,
+    detalle_cantidad:1
+  })
+
+  const [ordenes, setOrdenes] = useState([])
+  const [ultOrden, setUltOrden] = useState()
+  const loadOrdenes = async() =>{
+    const response = await fetch('http://192.168.100.24:4000/platos');
+    const data = await response.json();
+    setOrdenes(data);
+
+    if(data.length > 0){
+      setUltOrden(data[data.length - 1])
+    }
+  }
+
+  
+
 
 
   return (
@@ -266,7 +319,6 @@ const handleFinalizarCompra = async () => {
                       <Button disableRipple onClick={handleFinalizarCompra}  sx={{ width:'100%', marginTop: 2, bgcolor:'#5c73ff', fontFamily:'Times New Roman, sans serif', color:'white' , '&:hover': {
                         backgroundColor: '#2540e4',
                       }}}>
-                        
                         Finalizar Compra</Button>
                     </Card>
                   </Grid>
