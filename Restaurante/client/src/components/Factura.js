@@ -1,8 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import bg from '../img/bg_ticket.jpg';
-import { Button, Grid, Card, Typography } from '@mui/material';
+import { Box, Button, Grid, Card, Typography } from '@mui/material';
+import QRCode from 'react-qr-code';
+import logo from '../img/logo_big.png';
 
 export default function Factura() {
+
+  const buttonStyles = {
+    fontFamily: 'Times New Roman, sans serif',
+    borderRadius: '0px',
+    padding: '5px 10px',
+    backgroundColor: '#cccccc',
+    color: '#2d2d2d',
+    transition: 'background-color 0.3s',
+    '&:hover': {
+      backgroundColor: '#b2b2b2',
+    },
+    
+  };
 
   const [platos, setPlatos] = useState([]);
   const [clientes, setClientes] = useState([]);
@@ -40,9 +55,15 @@ export default function Factura() {
       const ultOrden = data[data.length - 1];
       console.log(ultOrden.orden_id)
       loadDetalles(ultOrden.orden_id);
+      setUltOrdenID(ultOrden.orden_id)
      updOrden(ultOrden.orden_id);
     }
   };
+
+  const setUltOrdenID = (value) =>{
+    let ultOrdenID = value;
+    return value;
+  }
 
   const loadDetalles = async (value) => {
     const response = await fetch('http://localhost:4000/detalle/' + value);
@@ -54,6 +75,7 @@ export default function Factura() {
     loadPlatos();
     loadCliente();
     loadOrdenes();
+
   }, []);
 
   const date = new Date();
@@ -127,34 +149,39 @@ export default function Factura() {
   }
 
   return (
-    <Grid container style={{
+    <Grid container justifyContent="center" alignItems="center" style={{
       minHeight: '100vh',
-      backgroundImage: `url(${bg})`,
+      backgroundImage: `linear-gradient(#ffffff, #fdfd86,#ffff46)`,
       backgroundSize: 'cover',
       backgroundPosition: 'center'
     }}>
-      <Card sx={{ height: '10%', width: '100%' }}>
-        <Typography> Gracias por tu compra, disfruta!!</Typography>
-        <Button onClick={handleObtTicket}>Obtén tu ticket aquí</Button>
-        <Typography>Muchas gracias {ultimoCliente.cliente_nombre} por tu compra</Typography>
+      <Card sx={{ padding: '20px', textAlign: 'center', width: '80%', backgroundColor: 'rgba(255,255,255,0.9)' }}>
+        <Grid container alignItems="center" justifyContent="center">
+          <img  src={logo} alt='Logo' style={{ width: '80px', height: 'auto', marginRight: '10px' }}/>
+          <Typography variant="h4" sx={{ fontFamily:'Times New Roman, sans serif', fontWeight:500 }} gutterBottom>Gracias por tu compra, disfruta!!</Typography>
+        </Grid>
+        <Button disableRipple sx={buttonStyles} onClick={handleObtTicket} >Obtén tu ticket aquí</Button>
+        <Typography sx={{ fontSize: 18, fontStyle:'italic', fontFamily:'Times New Roman, sans serif', fontWeight:500, marginTop:2 }}>Muchas gracias {ultimoCliente.cliente_nombre} por tu compra</Typography>
       </Card>
 
-      <Card sx={{ height: '10%', width: '100%' }} >
-        <Typography>Cédula: {ultimoCliente.cliente_cedula} -------------- Teléfono: {ultimoCliente.cliente_telefono} --------------  Correo Electrónico: {ultimoCliente.cliente_correo} --------------  Dirección: {ultimoCliente.cliente_direccion} </Typography>
+      <Card sx={{ padding: '20px', textAlign: 'left', width: '60%', backgroundColor: 'rgba(255,255,255,0.9)', marginTop: 1.5}} >
+        <Typography sx={{fontSize: 22, fontFamily:'Times New Roman, sans serif', fontWeight:800 }} gutterBottom>Detalles del Cliente:</Typography>
+        <Typography sx={{fontSize: 18, fontFamily:'Times New Roman, sans serif', fontWeight:500 }}>Cédula: {ultimoCliente.cliente_cedula} -- Teléfono: {ultimoCliente.cliente_telefono}</Typography>
+        <Typography sx={{fontSize: 18, fontFamily:'Times New Roman, sans serif', fontWeight:500 }}>Correo Electrónico: {ultimoCliente.cliente_correo} -- Dirección: {ultimoCliente.cliente_direccion}</Typography>
       </Card>
-      <Card sx={{ height: '10%', width: '100%', marginBottom: 55 }}>
-        <Typography>Restuarant Patito - Quito, Ecuador</Typography>
-        <Typography>Los detalles de tu compra son:  </Typography>
 
+      <Card sx={{ padding: '20px', textAlign: 'left', width: '60%', backgroundColor: 'rgba(255,255,255,0.9)', marginTop: 1 }}>
+      <Typography sx={{fontSize: 22, fontFamily:'Times New Roman, sans serif', fontWeight:800 }} gutterBottom>Detalles de la Compra:</Typography>
         {detalles.map((detalle, index) => (
-          <Typography key={index}>
-            {detalle.detalle_cantidad} x {getPlatoName(detalle.detalle_platos)} - - Precio Unitario: {getPlatoPrecio(detalle.detalle_platos)}$ - Precio Total: {detalle.detalle_cantidad * getPlatoPrecio(detalle.detalle_platos)}$
+          <Typography key={index} sx={{fontSize: 18,  fontFamily:'Times New Roman, sans serif' }}>
+            {detalle.detalle_cantidad} x {getPlatoName(detalle.detalle_platos)} - Precio Unitario: {getPlatoPrecio(detalle.detalle_platos)}$ - Precio Total: {detalle.detalle_cantidad * getPlatoPrecio(detalle.detalle_platos)}$
           </Typography>
         ))}
-
-        <Typography>Subtotal: {getTotalPrecio()}$</Typography>
-        <Typography>IVA (15%): {getIVA(getTotalPrecio())}$</Typography>
-        <Typography>Precio Total: {getPrecioFinal(getIVA(getTotalPrecio()), getTotalPrecio())}$</Typography>
+        <Typography sx={{marginTop: 2,fontSize: 18,  fontFamily:'Times New Roman, sans serif' }}>Subtotal: {getTotalPrecio()}$  ---------- IVA (15%): {getIVA(getTotalPrecio())}$</Typography>
+        <Typography sx={{fontSize: 18,  fontFamily:'Times New Roman, sans serif' }}>Precio Total: {getPrecioFinal(getIVA(getTotalPrecio()), getTotalPrecio())}$</Typography>
+        <Box sx={{ textAlign: 'center', marginTop: '20px' }}>
+          <QRCode value={`Cliente: ${ultimoCliente.cliente_nombre},Total: ${getPrecioFinal(getIVA(getTotalPrecio()), getTotalPrecio())}$`} />
+        </Box>
       </Card>
     </Grid>
   )
