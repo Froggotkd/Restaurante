@@ -93,7 +93,7 @@ export default function PlatoForms() {
 
   const handleChangePrecio = e => {
     const value = e.target.value;
-    if (/^\d+(\,\d{0,2})?$/.test(value) || value === '') {
+    if (/^\d+(\.\d{0,2})?$/.test(value) || value === '') {
       setPlato({ ...plato, plato_precio: value });
       setPrecioError('');
     } else {

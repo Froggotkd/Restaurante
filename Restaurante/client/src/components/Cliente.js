@@ -61,12 +61,11 @@ export default function Cliente() {
         cliente.cliente_nombre = 'invalid'
         cliente.cliente_correo = 'correo@correo'
         cliente.cliente_direccion = 'invalid'
-        cliente.cliente_telefono= '99999999'
+        cliente.cliente_telefono = '99999999'
 
         handleSubmit(e);
     }
 
-    const ipAdd = process.env.ip_add;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -88,7 +87,51 @@ export default function Cliente() {
         }
     };
 
-    
+    const [nombreError, setNombreError] = useState('');
+    const handleChangeNombre = e => {
+        const value = e.target.value;
+        if (/^[A-Za-z\s]*$/.test(value) || value === '') {
+            setCliente({ ...cliente, cliente_nombre: value });
+            setNombreError('');
+        } else {
+            setNombreError('Ingrese solo letras o espacios.');
+        }
+    };
+
+
+    const [cedulaError, setCedulaError] = useState('');
+    const handleChangeCedula = e => {
+        const value = e.target.value;
+        if (/^\d{0,10}$/.test(value) || value === '') {
+            setCliente({ ...cliente, cliente_cedula: value });
+            setCedulaError('');
+        } else {
+            setCedulaError('Ingrese 10 números');
+        }
+    };
+
+    const [emailError, setEmailError] = useState('');
+    const handleChangeCorreo = e => {
+        const reg = /^[A-Za-z0-9_/\s]+\@*([A-Za-z0-9_/\s])+\.*([A-Za-z0-9_/\s])*$/;
+        const value = e.target.value;
+        if (reg.test(value) || value === '') {
+            setCliente({ ...cliente, cliente_correo: value });
+            setEmailError('');
+        } else {
+            setEmailError('Ingrese una dirección de correo válida');
+        }
+    };
+
+    const [tlfError, setTlfError] = useState('');
+    const handleChangeTlf = e => {
+        const value = e.target.value;
+        if (/^\d{0,10}$/.test(value) || value === '') {
+            setCliente({ ...cliente, cliente_telefono: value });
+            setTlfError('');
+        } else {
+            setTlfError('Ingrese 10 números');
+        }
+    };
 
 
     return (
@@ -140,21 +183,21 @@ export default function Cliente() {
                                 </RadioGroup>
                             </Card>
                             <Fade in={mostrarFormulario}>
-                                
+
                                 <Card variant='outlined' sx={{
                                     p: 4,
                                     backgroundColor: '#ffffff',
                                     border: 2,
                                     borderColor: '#cccccc', marginTop: 1, width: '112vh'
                                 }}>
-                                    
+
                                     <Typography gutterBottom align='center' sx={{
                                         color: '#232520', fontWeight: 450, fontFamily: 'Times New Roman, sans serif', fontSize: 20
                                     }}>
                                         Ingresa tus datos para la factura
                                     </Typography>
                                     <form onSubmit={handleSubmit}>
-                                        
+
                                         <TextField
                                             inputProps={{ style: { fontFamily: 'Times New Roman, sans serif' } }}
                                             InputLabelProps={{ style: { fontFamily: 'Times New Roman, sans serif' } }}
@@ -163,10 +206,10 @@ export default function Cliente() {
                                             label='Nombre'
                                             name="cliente_nombre"
                                             value={cliente.cliente_nombre}
-                                            onChange={handleChange}
+                                            onChange={handleChangeNombre}
                                             margin='normal'
-                                            /*error={!!nombreError}
-                                            helperText={nombreError}*/
+                                            error={!!nombreError}
+                                            helperText={nombreError}
                                         />
 
                                         <TextField
@@ -177,10 +220,10 @@ export default function Cliente() {
                                             label='Cédula'
                                             name="cliente_cedula"
                                             value={cliente.cliente_cedula}
-                                            onChange={handleChange}
+                                            onChange={handleChangeCedula}
                                             margin='normal'
-                                        /*error={!!nombreError}
-                                        helperText={nombreError}*/
+                                            error={!!cedulaError}
+                                            helperText={cedulaError}
                                         />
                                         <TextField
                                             inputProps={{ style: { fontFamily: 'Times New Roman, sans serif' } }}
@@ -190,10 +233,10 @@ export default function Cliente() {
                                             label='Correo Electrónico'
                                             name="cliente_correo"
                                             value={cliente.cliente_correo}
-                                            onChange={handleChange}
+                                            onChange={handleChangeCorreo}
                                             margin='normal'
-                                        /*error={!!nombreError}
-                                        helperText={nombreError}*/
+                                            error={!!emailError}
+                                            helperText={emailError}
                                         />
                                         <TextField
                                             inputProps={{ style: { fontFamily: 'Times New Roman, sans serif' } }}
@@ -205,8 +248,7 @@ export default function Cliente() {
                                             value={cliente.cliente_direccion}
                                             onChange={handleChange}
                                             margin='normal'
-                                        /*error={!!nombreError}
-                                        helperText={nombreError}*/
+
                                         />
                                         <TextField
                                             inputProps={{ style: { fontFamily: 'Times New Roman, sans serif' } }}
@@ -216,10 +258,10 @@ export default function Cliente() {
                                             label='Teléfono'
                                             name="cliente_telefono"
                                             value={cliente.cliente_telefono}
-                                            onChange={handleChange}
+                                            onChange={handleChangeTlf}
                                             margin='normal'
-                                        /*error={!!nombreError}
-                                        helperText={nombreError}*/
+                                            error={!!tlfError}
+                                            helperText={tlfError}
                                         />
                                         <Button sx={buttonStyles} type='submit'>Obten tu ticket</Button>
 

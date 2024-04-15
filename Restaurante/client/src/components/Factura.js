@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import bg from '../img/bg_ticket.jpg';
 import { Box, Button, Grid, Card, Typography } from '@mui/material';
 import QRCode from 'react-qr-code';
 import logo from '../img/logo_big.png';

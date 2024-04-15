@@ -103,7 +103,7 @@ export default function Contacto() {
           </Card>
         </Grid>
         <Grid item>
-          <Card>
+          <Card sx={{marginTop: 2.5, marginLeft:5}}>
           <iframe src="https://www.google.com/maps/d/embed?mid=1nqaLQKmWZC2EqZ1bWTjoZdIZ1YN_rfI&ehbc=2E312F&noprof=1" width="500" height="480"></iframe>
           </Card>
         </Grid>
