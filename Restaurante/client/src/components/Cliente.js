@@ -66,6 +66,8 @@ export default function Cliente() {
         handleSubmit(e);
     }
 
+    const ipAdd = process.env.ip_add;
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 

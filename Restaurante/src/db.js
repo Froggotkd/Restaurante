@@ -3,11 +3,11 @@ const {db} = require('./config')
 
 
 const pool = new Pool({
-    user: db.user,
-    password: db.password,
-    host: db.host,
-    database: db.database,
-    port: db.port
+    user: 'postgres',
+    password: 'admin',
+    host: '192.168.100.21',
+    database: 'Restaurante',
+    port: 5432
 })
 
 module.exports = pool;

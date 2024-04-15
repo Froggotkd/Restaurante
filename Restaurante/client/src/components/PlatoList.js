@@ -7,6 +7,7 @@ import CardCover from '@mui/joy/CardCover';
 import AddIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import RemoveIcon from '@mui/icons-material/RemoveCircleOutlineOutlined';
 
+
 export default function PlatoList() {
   const [platos, setPlatos] = useState([]); //Array de objetos platos
   const [carrito, setCarrito] = useState([]); //Array con el carrito que se muestra en el drawer
@@ -15,6 +16,7 @@ export default function PlatoList() {
   const Bebidas = useRef(null);
   const Postres = useRef(null);
   const Cafeteria = useRef(null);
+  const Menu = useRef(null);
   //Para navegar entre páginas
   const navigate = useNavigate();
   //Abrir o cerrar el drawer
@@ -24,8 +26,10 @@ export default function PlatoList() {
     setOpen(newOpen);
   };
 
+
+  
   const loadPlatos = async () => { //Cargar los platos y guardarlos en el array
-    const response = await fetch('http://192.168.100.24:4000/platos');
+    const response = await fetch('http://localhost:4000/platos');
     const data = await response.json();
     setPlatos(data);
   };
@@ -114,7 +118,7 @@ export default function PlatoList() {
                     {plato.plato_nombre}
                   </Typography>
                   <Typography sx={{ fontFamily: 'Times New Roman, sans serif', marginLeft: 30 }} variant='body1' color='textSecondary'>
-                    {plato.plato_precio}
+                    {plato.plato_precio} $
                   </Typography>
                   <Typography sx={{ fontFamily: 'Times New Roman, sans serif', marginTop: 1, marginBottom: 2 }} variant='body1' color='textSecondary'>
                     {plato.plato_descripcion}
@@ -263,6 +267,8 @@ const handleFinalizarCompra = async () => {
               <Grid item xs />
 
               <Grid item>
+              <Button disableRipple={true} color='inherit' sx={{ fontFamily: 'Times New Roman, sans serif', color: '#000000' }} onClick={() => scrollToSection(Menu)}>Descubre nuestro menú</Button>
+                <Button disableRipple={true} color='inherit' sx={{ fontFamily: 'Times New Roman, sans serif', color: '#000000',p:'6px 18px'}} onClick={() => navigate('/contactus')}>contáctanos</Button>
                 <Button disableRipple={true} color='inherit' sx={{ fontFamily: 'Times New Roman, sans serif', color: '#000000' }} onClick={() => navigate('/create')}>
                   Editar Menú
                 </Button>
@@ -316,7 +322,7 @@ const handleFinalizarCompra = async () => {
                   <Grid container justifyContent="center" alignItems="center" sx={{ marginTop: 5 }}>
                     <Card sx={{ width: '100%', bgcolor: '#f1f1f1', p: 1 }}>
                       <Typography  sx={{fontSize:19, fontFamily: 'Times New Roman, sans serif', fontWeight: 500, marginLeft:6, fontStyle:'italic' }}>Total a pagar: {calcularPrecioTotal()} $</Typography>
-                      <Button disableRipple onClick={handleFinalizarCompra}  sx={{ width:'100%', marginTop: 2, bgcolor:'#5c73ff', fontFamily:'Times New Roman, sans serif', color:'white' , '&:hover': {
+                      <Button disableRipple disabled={carrito.length === 0 ? true : false} onClick={handleFinalizarCompra}  sx={{ width:'100%', marginTop: 2, bgcolor:'#5c73ff', fontFamily:'Times New Roman, sans serif', color:'white' , '&:hover': {
                         backgroundColor: '#2540e4',
                       }}}>
                         Finalizar Compra</Button>
@@ -388,6 +394,7 @@ const handleFinalizarCompra = async () => {
       </Grid>
 
       {/*DESCUBRE NUESTRO MENU */}
+     <div ref={Menu}></div> 
       <Grid container justifyContent='center' style={{ background: 'linear-gradient(to bottom, #ffffff, #e7e7e7)' }}>
         <Grid item xs={12} textAlign='center' marginBottom={2}>
           <Typography variant='h4' sx={{ fontSize: 30, marginTop: 4, fontFamily: 'Times New Roman, sans serif' }}>
