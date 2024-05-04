@@ -5,7 +5,7 @@ const {db} = require('./config')
 const pool = new Pool({
     user: 'postgres',
     password: 'admin',
-    host: '192.168.100.21',
+    host: 'localhost',
     database: 'Restaurante',
     port: 5432
 })

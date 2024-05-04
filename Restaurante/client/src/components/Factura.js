@@ -31,7 +31,7 @@ export default function Factura() {
   };
 
   const loadCliente = async () => {
-    const response = await fetch('http://192.168.100.24:4000/client');
+    const response = await fetch('http://localhost:4000/client');
     const data = await response.json();
     setClientes(data);
 
@@ -46,7 +46,7 @@ export default function Factura() {
   };
 
   const loadOrdenes = async () => {
-    const response = await fetch('http://192.168.100.24:4000/orden');
+    const response = await fetch('http://localhost:4000/orden');
     const data = await response.json();
     setOrdenes(data);
 

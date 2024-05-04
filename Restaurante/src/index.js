@@ -16,11 +16,11 @@ app.use(compraRoutes)
 app.use(clienteRoutes)
 app.use(detalleRoutes)
 
-app.use((err, req, res, next)=>{
+/*app.use ((err, req, res, next)=>{
     return res.json({
         message: 'Error!!!'
     })
-})
+})*/
 
 app.listen(4000);
 console.log('Server on port 4000')

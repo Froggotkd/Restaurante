@@ -159,7 +159,7 @@ export default function PlatoList() {
 const handleFinalizarCompra = async () => {
     try {
       // Crear la orden primero
-      const resOrden = await fetch("http://192.168.100.24:4000/platos/orden", {
+      const resOrden = await fetch("http://localhost:4000/platos/orden", {
         method: 'POST',
         body: JSON.stringify(orden),
         headers: { "Content-Type": "application/json" }
@@ -182,7 +182,7 @@ const handleFinalizarCompra = async () => {
       
       // Envía los detalles al backend
       for(var i = 0; i < detalles.length; i++){
-        const resDetalles = await fetch("http://192.168.100.24:4000/detalle", {
+        const resDetalles = await fetch("http://localhost:4000/detalle", {
           method: 'POST',
           body: JSON.stringify(detalles[i]),
           headers: { "Content-Type": "application/json" }
@@ -239,7 +239,7 @@ const handleFinalizarCompra = async () => {
   const [ordenes, setOrdenes] = useState([])
   const [ultOrden, setUltOrden] = useState()
   const loadOrdenes = async() =>{
-    const response = await fetch('http://192.168.100.24:4000/platos');
+    const response = await fetch('http://localhost:4000/platos');
     const data = await response.json();
     setOrdenes(data);
 
