@@ -102,7 +102,7 @@ export default function Factura() {
   };
 
   const getIVA = (totalPrecio) => {
-    let iva = totalPrecio * 0.15;
+    let iva = Math.round(totalPrecio * 0.15);
     orden.orden_iva = iva;
     return iva
   }

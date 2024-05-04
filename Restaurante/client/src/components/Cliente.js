@@ -111,14 +111,22 @@ export default function Cliente() {
     };
 
     const [emailError, setEmailError] = useState('');
+    const validarCorreo = (email) => {
+        const reg = /^\S+@\S+\.\S+$/;
+        return reg.test(email);
+    };
+
     const handleChangeCorreo = e => {
-        const reg = /^[A-Za-z0-9_/\s]+\@*([A-Za-z0-9_/\s])+\.*([A-Za-z0-9_/\s])*$/;
         const value = e.target.value;
-        if (reg.test(value) || value === '') {
-            setCliente({ ...cliente, cliente_correo: value });
-            setEmailError('');
-        } else {
+        setCliente({ ...cliente, cliente_correo: value });
+    };
+
+    const handleBlurCorreo = () => {
+        const isValid = validarCorreo(cliente.cliente_correo);
+        if (!isValid) {
             setEmailError('Ingrese una dirección de correo válida');
+        } else {
+            setEmailError('');
         }
     };
 
@@ -159,8 +167,8 @@ export default function Cliente() {
 
             {/* Contenido principal */}
             <Grid container alignItems="center" justifyContent="center">
-                <Grid item>
-                    <Card sx={{ bgcolor: '#f0f0f0', width: '170vh', p: 1 }}>
+                <Grid item xs={12}>
+                    <Card sx={{ bgcolor: '#f0f0f0', width: '98%', p: 1 }} >
                         <Typography variant="h4" sx={{ fontFamily: 'Times New Roman, sans serif', fontStyle: 'italic', marginLeft: 5 }}>
                             Ya casi terminas...
                         </Typography>
@@ -234,6 +242,7 @@ export default function Cliente() {
                                             name="cliente_correo"
                                             value={cliente.cliente_correo}
                                             onChange={handleChangeCorreo}
+                                            onBlur={handleBlurCorreo}
                                             margin='normal'
                                             error={!!emailError}
                                             helperText={emailError}
