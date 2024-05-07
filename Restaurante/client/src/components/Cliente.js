@@ -19,6 +19,9 @@ export default function Cliente() {
         },
     };
 
+   
+
+
     const [cliente, setCliente] = useState({
         cliente_nombre: '',
         cliente_cedula: 0,
@@ -26,7 +29,6 @@ export default function Cliente() {
         cliente_direccion: '',
         cliente_telefono: ''
     })
-
     const navigate = useNavigate();
 
     const handleChange = e => {

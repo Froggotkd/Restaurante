@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import {  Box, AppBar, Grid, Typography, Card, TextField, Button, CircularProgress, Checkbox, List, ListItemText, ListItem, Collapse, ListItemIcon, ListItemButton } from '@mui/material';
+import React, { useReducer } from 'react';
+import { Box, AppBar, Grid, Typography, Card, TextField, Button, CircularProgress, Checkbox, List, ListItemText, ListItem, Collapse, ListItemIcon, ListItemButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import bg from '../img/bg_platoForms.png';
 
@@ -27,30 +27,56 @@ const buttonStylesNow = {
   },
 };
 
-export default function PlatoForms() {
-  const [plato, setPlato] = useState({
+const initialState = {
+  plato: {
     plato_nombre: '',
     plato_precio: '',
     plato_descripcion: '',
     plato_disponibilidad: false,
     plato_imagen: '',
     plato_categoria: ''
-  });
+  },
+  loading: false,
+  precioError: '',
+  nombreError: '',
+  descError: '',
+  open: false,
+  selectedCategoria: '',
+};
 
-  const [loading, setLoading] = useState(false);
-  const [precioError, setPrecioError] = useState('');
-  const [nombreError, setNombreError] = useState('');
-  const [descError, setDescError] = useState('');
-  const [open, setOpen] = useState(false);
-  const [selectedCategoria, setSelectedCategoria] = useState('');
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'SET_PLATO':
+      return { ...state, plato: { ...state.plato, ...action.payload } };
+    case 'SET_LOADING':
+      return { ...state, loading: action.payload };
+    case 'SET_PRECIO_ERROR':
+      return { ...state, precioError: action.payload };
+    case 'SET_NOMBRE_ERROR':
+      return { ...state, nombreError: action.payload };
+    case 'SET_DESC_ERROR':
+      return { ...state, descError: action.payload };
+    case 'SET_OPEN':
+      return { ...state, open: action.payload };
+    case 'SET_SELECTED_CATEGORIA':
+      return { ...state, selectedCategoria: action.payload };
+    default:
+      return state;
+  }
+};
+
+export default function PlatoForms() {
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  const { plato, loading, precioError, nombreError, descError, open, selectedCategoria } = state;
   const categorias = ['Bebidas', 'Cafetería', 'Platos', 'Postres'];
+
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    setLoading(true);
     e.preventDefault();
-    console.log('2' + plato.plato_categoria)
+    dispatch({ type: 'SET_LOADING', payload: true });
 
     try {
       const res = await fetch("http://localhost:4000/platos", {
@@ -63,66 +89,33 @@ export default function PlatoForms() {
         throw new Error('Error al guardar el plato');
       }
 
-      setLoading(false);
+      dispatch({ type: 'SET_LOADING', payload: false });
       navigate('/');
     } catch (error) {
       console.error(error);
-      setLoading(false);
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
   };
 
-  const handleChangeNombre = e => {
-    const value = e.target.value;
-    if (value) {
-      setPlato({ ...plato, plato_nombre: value });
-      setNombreError('');
-    } else {
-      setNombreError('Ingrese solo letras o espacios.');
-    }
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    dispatch({ type: 'SET_PLATO', payload: { [name]: value } });
   };
 
-  const handleChangeDesc = e => {
-    const value = e.target.value;
-    if (/^[A-Za-z\s]*$/.test(value) || value === '') {
-      setPlato({ ...plato, plato_descripcion: value });
-      setDescError('');
-    } else {
-      setDescError('Ingrese solo letras o espacios.');
-    }
-  };
-
-  const handleChangePrecio = e => {
-    const value = e.target.value;
-    if (/^\d+(\.\d{0,2})?$/.test(value) || value === '') {
-      setPlato({ ...plato, plato_precio: value });
-      setPrecioError('');
-    } else {
-      setPrecioError('Ingrese solo números');
-    }
-  };
-
-  const handleChangeDisponibilidad = e => {
+  const handleChangeDisponibilidad = (e) => {
     const checked = e.target.checked;
-    setPlato({ ...plato, plato_disponibilidad: checked });
-  }
-
-  const handleChangeImagen = e => {
-    const value = e.target.value;
-    setPlato({ ...plato, plato_imagen: value });
+    dispatch({ type: 'SET_PLATO', payload: { plato_disponibilidad: checked } });
   }
 
   const handleClick = () => {
-    setOpen(!open);
+    dispatch({ type: 'SET_OPEN', payload: !open });
   }
 
   const handleCategoriaLista = (categoria) => {
-    setSelectedCategoria(categoria);
-    setPlato({ ...plato, plato_categoria: categoria });
-    console.log(categoria)
-    console.log(typeof (categoria))
-    setOpen(true);
+    dispatch({ type: 'SET_SELECTED_CATEGORIA', payload: categoria });
+    dispatch({ type: 'SET_PLATO', payload: { plato_categoria: categoria } });
+    dispatch({ type: 'SET_OPEN', payload: true });
   }
-
 
   return (
     <Grid
@@ -140,31 +133,15 @@ export default function PlatoForms() {
       <Grid item xs={20} md={10} lg={4} sx={{ marginTop: 10 }}>
         <AppBar sx={{ bgcolor: 'white', p: 0.8 }}>
           <Box>
-            <Button disableRipple onClick={() => navigate('/')}
-            sx={{
-              marginLeft: 120, bgcolor: 'white', fontFamily: 'Times New Roman, sans serif', color: '#2d2d2d',
-              transition: 'background-color 0.3s',
-              '&:hover': {
-                backgroundColor: '#cccccc',
-              },
-            }}>Menú Principal</Button>
+            <Button disableRipple onClick={() => navigate('/')} sx={{ marginLeft: 120, bgcolor: 'white', fontFamily: 'Times New Roman, sans serif', color: '#2d2d2d', transition: 'background-color 0.3s', '&:hover': { backgroundColor: '#cccccc', }, }}>Menú Principal</Button>
           </Box>
         </AppBar>
 
         <Button disableRipple sx={buttonStylesNow}>Crear Plato </Button>
         <Button disableRipple sx={buttonStyles} onClick={() => navigate('/edit')} >Editar Plato</Button>
         <Button disableRipple sx={buttonStyles} onClick={() => navigate('/delete')} >Eliminar Plato</Button>
-        <Card variant='outlined' sx={{
-          p: 4,
-          backgroundColor: '#ffffff',
-          border: 2,
-          borderColor: '#cccccc'
-        }}>
-          <Typography variant='h5' gutterBottom align='center' sx={{
-            color: '#232520', fontWeight: 450, fontFamily: 'Times New Roman, sans serif'
-          }}>
-            Crear Plato
-          </Typography>
+        <Card variant='outlined' sx={{ p: 4, backgroundColor: '#ffffff', border: 2, borderColor: '#cccccc' }}>
+          <Typography variant='h5' gutterBottom align='center' sx={{ color: '#232520', fontWeight: 450, fontFamily: 'Times New Roman, sans serif' }}>Crear Plato</Typography>
           <form onSubmit={handleSubmit}>
             <TextField
               inputProps={{ style: { fontFamily: 'Times New Roman, sans serif' } }}
@@ -174,7 +151,7 @@ export default function PlatoForms() {
               label='Nombre'
               name="plato_nombre"
               value={plato.plato_nombre}
-              onChange={handleChangeNombre}
+              onChange={handleChange}
               margin='normal'
               error={!!nombreError}
               helperText={nombreError}
@@ -187,7 +164,7 @@ export default function PlatoForms() {
               label='Precio'
               name='plato_precio'
               value={plato.plato_precio}
-              onChange={handleChangePrecio}
+              onChange={handleChange}
               margin='normal'
               error={!!precioError}
               helperText={precioError}
@@ -201,7 +178,7 @@ export default function PlatoForms() {
               label='Descripción'
               name='plato_descripcion'
               value={plato.plato_descripcion}
-              onChange={handleChangeDesc}
+              onChange={handleChange}
               margin='normal'
               error={!!descError}
               helperText={descError}
@@ -215,7 +192,7 @@ export default function PlatoForms() {
               label='Enlace de la imagen'
               name='plato_imagen'
               value={plato.plato_imagen}
-              onChange={handleChangeImagen}
+              onChange={handleChange}
               margin='normal'
             />
 
@@ -225,9 +202,7 @@ export default function PlatoForms() {
               sx={{ width: '100%', maxWidth: 320, bgcolor: '#f3f3f3', borderRadius: 3, marginBottom: 1, marginTop: 1 }}
             >
               <ListItem onClick={handleClick}>
-                <ListItemText disableTypography primary={<Typography sx={{
-                  fontSize: 17, color: '#808080', fontFamily: 'Times New Roman, sans serif'
-                }} >Categoría</Typography>} />
+                <ListItemText disableTypography primary={<Typography sx={{ fontSize: 17, color: '#808080', fontFamily: 'Times New Roman, sans serif' }} >Categoría</Typography>} />
                 {open ? <ListItemIcon> &#9654; </ListItemIcon> : <ListItemIcon> &#9660; </ListItemIcon>}
               </ListItem>
               <Collapse in={open} timeout="auto" unmountOnExit>
@@ -242,28 +217,14 @@ export default function PlatoForms() {
               </Collapse>
             </List>
 
-            <Typography variant='body1' gutterBottom align='left' sx={{
-              color: '#68706a',
-              fontFamily: 'Times New Roman, sans serif'
-            }}>
-              ¿Está disponible?
-
-              <Typography variant='body1' gutterBottom align='right' sx={{
-                color: '#68706a',
-                fontFamily: 'Times New Roman, sans serif'
-              }}>
-                <Checkbox
-                  checked={plato.plato_disponibilidad}
-                  onChange={handleChangeDisponibilidad}
-                  sx={{
-                    color: '#cccccc',
-                    '&.Mui-checked': {
-                      color: '#b2b2b2'
-                    }
-                  }}
-                />
-                Sí
-              </Typography>
+            <Typography variant='body1' gutterBottom align='left' sx={{ color: '#68706a', fontFamily: 'Times New Roman, sans serif' }}>¿Está disponible?</Typography>
+            <Typography variant='body1' gutterBottom align='right' sx={{ color: '#68706a', fontFamily: 'Times New Roman, sans serif' }}>
+              <Checkbox
+                checked={plato.plato_disponibilidad}
+                onChange={handleChangeDisponibilidad}
+                sx={{ color: '#cccccc', '&.Mui-checked': { color: '#b2b2b2' } }}
+              />
+              Sí
             </Typography>
             <Button
               fullWidth
